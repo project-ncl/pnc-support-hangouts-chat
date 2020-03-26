@@ -4,6 +4,7 @@
  * @param {Object} event the event object from Hangouts Chat
  */
 function onMessage(event) {
+  var scriptProperties = PropertiesService.getScriptProperties();
   var name = "";
 
   if (event.space.type == "DM") {
@@ -11,7 +12,13 @@ function onMessage(event) {
   } else {
     name = event.user.displayName;
   }
-  var message = name + " said \"" + event.message.text + "\"";
+  if (event.message.text.split(" ")[0] == "new") {
+    scriptProperties.setProperty("supportUsers", "add");
+  } else {
+    scriptProperties.setProperty("supportUsers", "no add");
+  }
+    
+  var message = name + " said \"" + event.message.text + "\"" + " <" + event.user.name + "> " + scriptProperties.getProperty("supportUsers");
 
   return { "text": message };
 }
