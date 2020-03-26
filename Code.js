@@ -4,22 +4,37 @@
  * @param {Object} event the event object from Hangouts Chat
  */
 function onMessage(event) {
+  
+  var SUPPORT_KEY = "supportEngineers";
   var scriptProperties = PropertiesService.getScriptProperties();
+  
   var name = "";
+  var message = "";
 
   if (event.space.type == "DM") {
     name = "You";
   } else {
     name = event.user.displayName;
   }
-  if (event.message.text.split(" ")[0] == "new") {
-    scriptProperties.setProperty("supportUsers", "add");
-  } else {
-    scriptProperties.setProperty("supportUsers", "no add");
-  }
+  
+  if (event.message.text.includes("addMeToSupport")) {
     
-  var message = name + " said \"" + event.message.text + "\"" + " <" + event.user.name + "> " + scriptProperties.getProperty("supportUsers");
-
+    var currentSupport = scriptProperties.getProperty(SUPPORT_KEY);
+    
+    if (currentSupport == null) {
+      currentSupport = "";
+    }
+    
+    currentSupport += " <" + event.user.name + ">";
+    scriptProperties.setProperty(SUPPORT_KEY, currentSupport);
+    
+    message = "You were added to the support engineers list";
+  } else {
+    // scriptProperties.setProperty("supportUsers", "no add");
+  }
+  if (message == "") {
+    message = name + " said \"" + event.message.text + "\" " + scriptProperties.getProperty(SUPPORT_KEY);
+  }
   return { "text": message };
 }
 
