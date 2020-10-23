@@ -5,9 +5,6 @@
  */
 function onMessage(event) {
   
-  var SUPPORT_KEY = "supportEngineers";
-  var scriptProperties = PropertiesService.getScriptProperties();
-  
   var name = "";
   var message = "";
 
@@ -17,26 +14,34 @@ function onMessage(event) {
     name = event.user.displayName;
   }
   
-  if (event.message.text.includes("addMeToSupport")) {
+  if (event.message.text.includes("support add")) {
     
-    var currentSupport = scriptProperties.getProperty(SUPPORT_KEY);
+    var currentSupport = getSupportStoreString();
     
     if (currentSupport == null) {
       currentSupport = "";
     }
     
     currentSupport += " <" + event.user.name + ">";
-    scriptProperties.setProperty(SUPPORT_KEY, currentSupport);
+    setSupportStoreString(currentSupport);
     
     message = "You were added to the support engineers list";
-  } else {
-    // scriptProperties.setProperty("supportUsers", "no add");
+    
+  } else if (event.message.text.includes("support reset")) {
+    
+    setSupportStoreString("");
+    message = "Support engineer list reset";
+    
   }
-  if (message == "") {
-    message = name + " said \"" + event.message.text + "\" " + scriptProperties.getProperty(SUPPORT_KEY);
+    
+  if (message == "" && haveSupportEngineers()) {
+    message = "Ping: " + getSupportStoreString();
   }
+  
   return { "text": message };
 }
+
+
 
 /**
  * Responds to an ADDED_TO_SPACE event in Hangouts Chat.
@@ -69,3 +74,23 @@ function onRemoveFromSpace(event) {
   console.info("Bot removed from ", event.space.name);
 }
 
+
+/////////////////////////////////////////////////////////////////////
+// Helper functions
+/////////////////////////////////////////////////////////////////////
+function getSupportStoreString() {
+  var SUPPORT_KEY = "supportEngineers";
+  var scriptProperties = PropertiesService.getScriptProperties();
+  return scriptProperties.getProperty(SUPPORT_KEY);
+}
+
+function setSupportStoreString(text) {
+  var SUPPORT_KEY = "supportEngineers";
+  var scriptProperties = PropertiesService.getScriptProperties();
+  var currentSupport = scriptProperties.setProperty(SUPPORT_KEY, text);
+}
+
+function haveSupportEngineers() {
+  var currentSupport = getSupportStoreString();
+  return currentSupport != null && currentSupport != "";
+}
