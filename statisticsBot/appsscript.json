@@ -1,0 +1,10 @@
+{
+  "timeZone": "Europe/Paris",
+  "dependencies": {
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "chat": {
+    "addToSpaceFallbackMessage": "Thank you for adding me!"
+  },
+   "runtimeVersion": "V8"
+}
