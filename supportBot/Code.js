@@ -3,7 +3,7 @@
  *
  * @param {Object} event the event object from Hangouts Chat
  */
-function onMessage(event) {
+ function onMessage(event) {
   
   var name = "";
   var message = "";
@@ -13,10 +13,10 @@ function onMessage(event) {
   } else {
     name = event.user.displayName;
   }
+
+  var currentSupport = getSupportStoreString();
   
   if (event.message.text.includes("support add")) {
-    
-    var currentSupport = getSupportStoreString();
     
     if (currentSupport == null) {
       currentSupport = "";
@@ -25,7 +25,28 @@ function onMessage(event) {
     currentSupport += " <" + event.user.name + ">";
     setSupportStoreString(currentSupport);
     
-    message = "You were added to the support engineers list";
+    message = "You were added to the support engineers list, enjoy it :)";
+
+  } else if (event.message.text.includes("support remove")) {
+
+    if (currentSupport != null) {
+
+      if (currentSupport.includes(" <" + event.user.name + ">")) {
+
+        currentSupport = currentSupport.replace(" <" + event.user.name + ">", "");
+        setSupportStoreString(currentSupport);
+        message = "You were removed from the support engineers list, we will miss u :(";
+
+      } else {
+
+        message = "You are not in the support engineers list (yet)";
+
+      }
+    } else {
+
+      message = "There is no support engineer in the list";
+
+    }
     
   } else if (event.message.text.includes("support reset")) {
     
